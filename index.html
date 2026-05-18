@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>掉髮類型自我檢測｜髮盛診所</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #1E3A2F;
+    --green-mid: #2E5D47;
+    --green-light: #4A8C6F;
+    --gold: #C9A84C;
+    --gold-light: #E2C97E;
+    --cream: #F7F3EC;
+    --cream-dark: #EDE8DE;
+    --white: #FFFFFF;
+    --text-dark: #1A1A1A;
+    --text-mid: #4A4A4A;
+    --text-light: #888;
+    --radius: 20px;
+    --shadow: 0 12px 48px rgba(30,58,47,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(74,140,111,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(201,168,76,0.06) 0%, transparent 50%);
+  }
+
+  .quiz-wrapper {
+    width: 100%;
+    max-width: 520px;
+    position: relative;
+  }
+
+  /* ── SCREENS ── */
+  .screen {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── INTRO ── */
+  .intro-card {
+    background: var(--green-deep);
+    border-radius: var(--radius);
+    padding: 52px 40px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .intro-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.08);
+  }
+  .intro-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(74,140,111,0.12);
+  }
+
+  .clinic-badge {
+    display: inline-block;
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold-light);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    padding: 6px 18px;
+    border-radius: 30px;
+    margin-bottom: 28px;
+    position: relative; z-index: 1;
+  }
+
+  .intro-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    display: block;
+    position: relative; z-index: 1;
+  }
+
+  .intro-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.4;
+    margin-bottom: 14px;
+    position: relative; z-index: 1;
+  }
+
+  .intro-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.8;
+    margin-bottom: 32px;
+    position: relative; z-index: 1;
+  }
+
+  .intro-meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 36px;
+    position: relative; z-index: 1;
+  }
+
+  .meta-item {
+    text-align: center;
+  }
+  .meta-num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .meta-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--green-deep);
+    border: none;
+    border-radius: 50px;
+    padding: 16px 48px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 24px rgba(201,168,76,0.35);
+    position: relative; z-index: 1;
+    width: 100%;
+  }
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(201,168,76,0.45);
+  }
+  .btn-start:active { transform: translateY(0); }
+
+  /* ── QUESTION ── */
+  .question-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 36px 32px 32px;
+    box-shadow: var(--shadow);
+  }
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 1px;
+  }
+
+  .progress-count {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    color: var(--green-mid);
+    font-weight: 600;
+  }
+
+  .progress-bar-track {
+    width: 100%;
+    height: 4px;
+    background: var(--cream-dark);
+    border-radius: 4px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-mid), var(--green-light));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .q-number {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .q-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text-dark);
+    line-height: 1.55;
+    margin-bottom: 28px;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 14px;
+    background: var(--cream);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+  }
+
+  .option-btn:hover {
+    border-color: var(--green-light);
+    background: rgba(74,140,111,0.06);
+    transform: translateX(4px);
+  }
+
+  .option-btn.selected {
+    border-color: var(--green-mid);
+    background: rgba(46,93,71,0.08);
+  }
+
+  .option-alpha {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1.5px solid var(--cream-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mid);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option-btn.selected .option-alpha {
+    background: var(--green-mid);
+    border-color: var(--green-mid);
+    color: white;
+  }
+
+  .option-text {
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 28px;
+  }
+
+  .btn-back {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 8px 0;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .btn-back:hover { color: var(--text-mid); }
+
+  .btn-next {
+    background: var(--green-deep);
+    color: var(--white);
+    border: none;
+    border-radius: 50px;
+    padding: 13px 36px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .btn-next.enabled {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .btn-next.enabled:hover {
+    background: var(--green-mid);
+    transform: translateY(-1px);
+  }
+
+  /* ── LOADING ── */
+  .loading-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .loading-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--green-mid);
+    animation: bounce 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; background: var(--green-light); }
+  .dot:nth-child(3) { animation-delay: 0.4s; background: var(--gold); }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .loading-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+  .loading-sub {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  /* ── RESULT ── */
+  .result-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .result-header {
+    padding: 40px 36px 32px;
+    text-align: center;
+    position: relative;
+  }
+
+  .result-emoji { font-size: 52px; margin-bottom: 16px; display: block; }
+
+  .result-tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .result-type {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.9;
+  }
+
+  .result-body {
+    padding: 0 36px 36px;
+  }
+
+  .result-divider {
+    height: 1px;
+    background: var(--cream-dark);
+    margin-bottom: 28px;
+  }
+
+  .suggest-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-light);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  .suggest-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .suggest-tag {
+    background: var(--cream);
+    border: 1px solid var(--cream-dark);
+    color: var(--text-mid);
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  .btn-cta {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+    color: var(--white);
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(30,58,47,0.25);
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 14px;
+  }
+  .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(30,58,47,0.3); }
+
+  .btn-retry {
+    display: block;
+    width: 100%;
+    background: none;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .btn-retry:hover { border-color: var(--text-light); color: var(--text-mid); }
+
+  .result-footer {
+    text-align: center;
+    padding: 0 36px 28px;
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.8;
+  }
+
+  /* Type colors */
+  .type-a .result-header { background: linear-gradient(160deg, #FFF8F0 0%, #FFF 60%); }
+  .type-a .result-tag { background: #FFF0E0; color: #C47A30; }
+  .type-b .result-header { background: linear-gradient(160deg, #F0F5FF 0%, #FFF 60%); }
+  .type-b .result-tag { background: #E8F0FF; color: #3060C4; }
+  .type-c .result-header { background: linear-gradient(160deg, #FFF0F3 0%, #FFF 60%); }
+  .type-c .result-tag { background: #FFE8EC; color: #C43050; }
+  .type-d .result-header { background: linear-gradient(160deg, #F0FFF5 0%, #FFF 60%); }
+  .type-d .result-tag { background: #E0FFF0; color: #2A8C5A; }
+</style>
+</head>
+<body>
+<div class="quiz-wrapper">
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-card">
+      <div class="clinic-badge">髮 盛 診 所</div>
+      <span class="intro-icon">🔬</span>
+      <h1 class="intro-title">掉髮類型<br>自我檢測</h1>
+      <p class="intro-sub">回答 10 個問題，了解你的掉髮成因<br>讓醫師為你制定最適合的治療方向</p>
+      <div class="intro-meta">
+        <div class="meta-item">
+          <div class="meta-num">10</div>
+          <div class="meta-label">道題目</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-num">3</div>
+          <div class="meta-label">分鐘完成</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-num">4</div>
+          <div class="meta-label">種結果類型</div>
+        </div>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">開始檢測 →</button>
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div class="screen" id="screen-question">
+    <div class="question-card">
+      <div class="progress-header">
+        <span class="progress-label">QUESTION</span>
+        <span class="progress-count" id="q-count">1 / 10</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar" style="width:10%"></div>
+      </div>
+      <div class="q-number" id="q-number">Q 01</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options-list" id="options-list"></div>
+      <div class="nav-row">
+        <button class="btn-back" id="btn-back" onclick="prevQuestion()">← 上一題</button>
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()">下一題 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-card">
+      <div class="loading-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="loading-text">正在分析你的結果⋯</div>
+      <div class="loading-sub">根據你的答案配對最符合的掉髮類型</div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="result-card" id="result-card">
+      <div class="result-header" id="result-header">
+        <span class="result-emoji" id="result-emoji"></span>
+        <div class="result-tag" id="result-tag"></div>
+        <div class="result-type" id="result-type"></div>
+        <div class="result-desc" id="result-desc"></div>
+      </div>
+      <div class="result-body">
+        <div class="result-divider"></div>
+        <div class="suggest-title">建議療程方向</div>
+        <div class="suggest-tags" id="suggest-tags"></div>
+        <button class="btn-cta" onclick="bookConsult()">📅 預約免費諮詢</button>
+        <button class="btn-retry" onclick="retryQuiz()">重新檢測</button>
+      </div>
+      <div class="result-footer">
+        ⚕️ 此測驗僅供參考，正確診斷請諮詢髮盛診所專業醫師<br>
+        掉髮治療越早介入，效果越好
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    text: "你的性別與年齡？",
+    options: [
+      { label: "男性，20–35 歲", scores: { aga: 1 } },
+      { label: "男性，35 歲以上", scores: { aga: 2 } },
+      { label: "女性，20–40 歲", scores: { tel: 1 } },
+      { label: "女性，40 歲以上", scores: { tel: 1, aga: 1 } }
+    ]
+  },
+  {
+    text: "你的掉髮從什麼時候開始？",
+    options: [
+      { label: "最近 1–3 個月突然大量掉", scores: { tel: 2 } },
+      { label: "慢慢掉，持續超過半年以上", scores: { aga: 2 } },
+      { label: "某個區域突然一塊塊掉", scores: { aa: 3 } },
+      { label: "從年輕時就開始，越來越稀疏", scores: { aga: 2 } }
+    ]
+  },
+  {
+    text: "掉髮的位置主要在哪裡？",
+    options: [
+      { label: "全頭均勻掉，洗頭／梳頭特別明顯", scores: { tel: 2 } },
+      { label: "頭頂、髮線後退為主", scores: { aga: 2 } },
+      { label: "出現圓形或橢圓形禿塊", scores: { aa: 3 } },
+      { label: "頂部稀疏，但兩側還好", scores: { aga: 1, scalp: 1 } }
+    ]
+  },
+  {
+    text: "你每天大約掉多少根頭髮？",
+    options: [
+      { label: "50 根以內（正常範圍，但感覺在增加）", scores: { scalp: 1 } },
+      { label: "100–200 根，枕頭／地板明顯", scores: { tel: 2 } },
+      { label: "局部整片掉，不是一根根", scores: { aa: 3 } },
+      { label: "不確定，但感覺越來越稀疏", scores: { aga: 1 } }
+    ]
+  },
+  {
+    text: "最近半年你有以下經歷嗎？",
+    options: [
+      { label: "工作壓力極大、長期睡眠不足", scores: { tel: 2 } },
+      { label: "生產、重大手術或大病後", scores: { tel: 3 } },
+      { label: "節食減肥、長期飲食不均衡", scores: { tel: 2 } },
+      { label: "以上都沒有", scores: { aga: 1, scalp: 1 } }
+    ]
+  },
+  {
+    text: "你的家族中有人有禿頭困擾嗎？",
+    options: [
+      { label: "有，父親或祖父這側", scores: { aga: 2 } },
+      { label: "有，母親或外祖父這側", scores: { aga: 1 } },
+      { label: "家族兩邊都有", scores: { aga: 3 } },
+      { label: "沒有家族禿頭史", scores: { tel: 1, scalp: 1 } }
+    ]
+  },
+  {
+    text: "你的頭皮狀況如何？",
+    options: [
+      { label: "容易出油、常有頭皮屑", scores: { scalp: 2 } },
+      { label: "頭皮偏乾、會癢", scores: { scalp: 1 } },
+      { label: "頭皮看起來正常", scores: { tel: 1 } },
+      { label: "有紅腫、刺痛或異常感", scores: { aa: 1, scalp: 1 } }
+    ]
+  },
+  {
+    text: "你平常的生活與飲食習慣？",
+    options: [
+      { label: "外食為主、蔬菜水果攝取少", scores: { tel: 1, scalp: 1 } },
+      { label: "有在補充保健食品（生物素、鋅等）", scores: { tel: 1 } },
+      { label: "飲食均衡，但壓力大、睡不好", scores: { tel: 2 } },
+      { label: "生活作息正常，飲食也還算均衡", scores: { scalp: 1 } }
+    ]
+  },
+  {
+    text: "你的頭髮質地最近有變化嗎？",
+    options: [
+      { label: "髮絲變細、變軟，缺乏彈性", scores: { aga: 2 } },
+      { label: "髮質沒變，但量明顯變少", scores: { tel: 1 } },
+      { label: "局部髮絲稀疏，其他地方正常", scores: { aa: 2 } },
+      { label: "整體感覺乾燥、易斷裂", scores: { scalp: 2 } }
+    ]
+  },
+  {
+    text: "你目前有嘗試過以下任何方式嗎？",
+    options: [
+      { label: "自行使用生髮水／洗髮精，效果不明顯", scores: { aga: 1, scalp: 1 } },
+      { label: "曾就診但沒有持續治療", scores: { aga: 1 } },
+      { label: "完全還沒嘗試過任何方式", scores: { tel: 1 } },
+      { label: "有規律治療中，但效果有限", scores: { aga: 1 } }
+    ]
+  }
+];
+
+const results = {
+  tel: {
+    emoji: "🍃",
+    tag: "休止期落髮",
+    type: "壓力型・休止期落髮",
+    desc: "你的掉髮可能與近期壓力、營養不足或身體重大變化有關。\n好消息是：這類掉髮通常是可逆的！透過適當調理，毛囊可以恢復到生長期。",
+    suggests: ["頭皮養護療程", "營養補充點滴", "低能量雷射", "壓力評估諮詢"],
+    colorClass: "type-a"
+  },
+  aga: {
+    emoji: "🧬",
+    tag: "雄性禿 AGA",
+    type: "遺傳型・雄性禿",
+    desc: "你的掉髮模式顯示可能與遺傳及雄性荷爾蒙（DHT）有關，頭頂和髮線是最常受影響的區域。\n越早介入，保留的毛囊越多、效果越好！",
+    suggests: ["生長因子療程", "低能量雷射 LLLT", "口服藥物評估", "頭皮微針"],
+    colorClass: "type-b"
+  },
+  aa: {
+    emoji: "🔴",
+    tag: "圓形禿",
+    type: "免疫型・圓形禿",
+    desc: "你描述的掉髮狀況可能與免疫系統異常有關，建議盡快接受專業面診評估，不建議自行處理。\n髮盛診所提供完整的圓形禿評估與治療計畫。",
+    suggests: ["專業醫師面診", "免疫調節治療", "局部注射治療", "頭皮環境檢測"],
+    colorClass: "type-c"
+  },
+  scalp: {
+    emoji: "🌿",
+    tag: "頭皮環境型",
+    type: "頭皮環境型落髮",
+    desc: "你的頭皮油脂分泌或毛囊阻塞可能影響了頭髮健康。\n透過專業的頭皮淨化與調理療程，大多數人在 2–3 個月內可見明顯改善！",
+    suggests: ["頭皮淨化療程", "毛囊疏通護理", "控油調理療程", "頭皮微生態平衡"],
+    colorClass: "type-d"
+  }
+};
+
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  currentQ = 0;
+  answers = new Array(questions.length).fill(null);
+  renderQuestion();
+  showScreen('screen-question');
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const alphas = ['A', 'B', 'C', 'D'];
+
+  document.getElementById('q-count').textContent = `${currentQ + 1} / ${questions.length}`;
+  document.getElementById('q-number').textContent = `Q ${String(currentQ + 1).padStart(2, '0')}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('progress-bar').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[currentQ] === i ? ' selected' : '');
+    btn.innerHTML = `
+      <div class="option-alpha">${alphas[i]}</div>
+      <div class="option-text">${opt.label}</div>
+    `;
+    btn.onclick = () => selectOption(i);
+    list.appendChild(btn);
+  });
+
+  const backBtn = document.getElementById('btn-back');
+  backBtn.style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = currentQ === questions.length - 1 ? '查看結果 →' : '下一題 →';
+  updateNextBtn();
+}
+
+function selectOption(idx) {
+  answers[currentQ] = idx;
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === idx);
+  });
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById('btn-next');
+  btn.classList.toggle('enabled', answers[currentQ] !== null);
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showLoading();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function showLoading() {
+  showScreen('screen-loading');
+  setTimeout(showResult, 2200);
+}
+
+function calcResult() {
+  const scores = { tel: 0, aga: 0, aa: 0, scalp: 0 };
+  answers.forEach((ans, qi) => {
+    if (ans === null) return;
+    const s = questions[qi].options[ans].scores;
+    Object.keys(s).forEach(k => { scores[k] += s[k]; });
+  });
+  return Object.keys(scores).reduce((a, b) => scores[a] >= scores[b] ? a : b);
+}
+
+function showResult() {
+  const type = calcResult();
+  const r = results[type];
+
+  document.getElementById('result-card').className = `result-card ${r.colorClass}`;
+  document.getElementById('result-emoji').textContent = r.emoji;
+  document.getElementById('result-tag').textContent = r.tag;
+  document.getElementById('result-type').textContent = r.type;
+  document.getElementById('result-desc').textContent = r.desc;
+
+  const tagsEl = document.getElementById('suggest-tags');
+  tagsEl.innerHTML = r.suggests.map(t => `<span class="suggest-tag">✦ ${t}</span>`).join('');
+
+  showScreen('screen-result');
+}
+
+function bookConsult() {
+  window.open('https://line.me/R/ti/p/@472ybbbj', '_blank');
+}
+
+function retryQuiz() {
+  startQuiz();
+}
+</script>
+</body>
+</html>
